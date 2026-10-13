@@ -4,8 +4,10 @@ export const experience = [
     company: 'Freelance',
     period: 'Oct 2025 - Present',
     type: 'Remote · Freelance',
-    role: 'Freelance Software Developer',
+    role: 'Full Stack Software Engineer',
     points: [
+      'I specialize in creating end-to-end software solutions, from building robust backends with {nodejs|Node.js} and {hono|Hono} to crafting intuitive user interfaces with {react|ReactJS}. Handling mobile, desktop and web.',
+      'Experience in developeing, testing, deployement, maintainence and managing teams of designers and testers',
       '[[Restaurant Management System]] (Sep - Oct 2026): {tauri|Tauri} desktop POS, web app, admin portal and {workers|Cloudflare} backend.',
       '[[Face Search App]] (Mar 2026 - Present): offline-first face-search POS with serverless backend, dashboard and download portal.',
       '[[Group Policy Manager]] (Oct - Nov 2025): {electron|Electron} app applying local Windows restrictions from a simple UI.',

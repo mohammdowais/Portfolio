@@ -14,36 +14,84 @@ export function screenshotUrls(project) {
 export function sliderHtml(project) {
   const urls = screenshotUrls(project);
   if (!urls.length) {
-    return `<p class="no-shots">No screenshots${project.closedSource ? ' (closed-source project)' : ' yet'}.</p>`;
+    return '';
   }
 
   const images = urls.map((url, i) =>
     `<img src="${url}" width="960" height="540" alt="${project.name} screenshot ${i + 1}" decoding="async" ${i ? 'loading="lazy"' : 'fetchpriority="high"'}>`).join('');
   const controls = urls.length > 1
-    ? `<button class="slider-btn prev" aria-label="Previous screenshot">&lsaquo;</button>
-       <button class="slider-btn next" aria-label="Next screenshot">&rsaquo;</button>
-       <div class="slider-dots">${urls.map((_, i) => `<i class="${i ? '' : 'active'}"></i>`).join('')}</div>`
+    ? `<button class="slider-btn prev" aria-label="Previous screenshot" type="button">&lsaquo;</button>
+       <button class="slider-btn next" aria-label="Next screenshot" type="button">&rsaquo;</button>
+       <div class="slider-dots">${urls.map((_, i) => `<i class="${i ? '' : 'active'}" data-index="${i}" title="Screenshot ${i + 1}"></i>`).join('')}</div>`
     : '';
 
   return `<div class="slider"><div class="track">${images}</div>${controls}</div>`;
 }
 
 export function initSlider(root) {
-  const track = $('.track', root);
+  const slider = $('.slider', root);
+  if (!slider) return;
+  const track = $('.track', slider);
   if (!track) return;
 
-  $$('img', track).forEach(img => {
-    if (img.complete) img.classList.add('loaded');
-    else img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
+  const images = $$('img', track);
+  images.forEach(img => {
+    if (img.complete) {
+      img.classList.add('loaded');
+    } else {
+      img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
+      img.addEventListener('error', () => img.classList.add('loaded'), { once: true });
+    }
   });
 
-  const dots = $$('.slider-dots i', root);
-  if (!dots.length) return;
-  const scrollBy = direction => track.scrollBy({ left: direction * track.clientWidth });
-  $('.prev', root).addEventListener('click', () => scrollBy(-1));
-  $('.next', root).addEventListener('click', () => scrollBy(1));
+  const prevBtn = $('.slider-btn.prev', slider);
+  const nextBtn = $('.slider-btn.next', slider);
+  const dots = $$('.slider-dots i', slider);
+  const count = images.length;
+  if (count <= 1) return;
+
+  const getIndex = () => {
+    const width = track.clientWidth || 1;
+    return Math.round(track.scrollLeft / width);
+  };
+
+  const goTo = index => {
+    const width = track.clientWidth || 1;
+    let target = index;
+    if (target < 0) target = count - 1;
+    if (target >= count) target = 0;
+    track.scrollTo({
+      left: target * width,
+      behavior: 'smooth'
+    });
+  };
+
+  if (prevBtn) {
+    prevBtn.onclick = e => {
+      e.preventDefault();
+      e.stopPropagation();
+      goTo(getIndex() - 1);
+    };
+  }
+
+  if (nextBtn) {
+    nextBtn.onclick = e => {
+      e.preventDefault();
+      e.stopPropagation();
+      goTo(getIndex() + 1);
+    };
+  }
+
+  dots.forEach((dot, i) => {
+    dot.onclick = e => {
+      e.preventDefault();
+      e.stopPropagation();
+      goTo(i);
+    };
+  });
+
   track.addEventListener('scroll', () => {
-    const index = Math.round(track.scrollLeft / track.clientWidth);
+    const index = getIndex();
     dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
   }, { passive: true });
 }

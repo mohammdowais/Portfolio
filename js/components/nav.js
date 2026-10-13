@@ -16,6 +16,7 @@ export function initNav() {
 
   hideTopbarOnScroll();
   highlightCurrentSection();
+  initSmoothScroll();
 }
 
 // Hidden after the hero; hover the top edge to bring it back. On touch screens, scrolling up shows it.
@@ -23,10 +24,21 @@ function hideTopbarOnScroll() {
   const topbar = $('#topbar');
   const touch = matchMedia('(hover: none)');
   let lastY = 0;
+  let ticking = false;
+
   addEventListener('scroll', () => {
-    const scrollingUp = touch.matches && scrollY < lastY - 4;
-    topbar.classList.toggle('is-hidden', scrollY > 40 && !scrollingUp);
-    lastY = scrollY;
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      const currentY = window.scrollY;
+      const delta = currentY - lastY;
+      if (Math.abs(delta) > 12) {
+        const scrollingUp = delta < 0;
+        topbar.classList.toggle('is-hidden', currentY > 60 && !scrollingUp);
+        lastY = currentY;
+      }
+      ticking = false;
+    });
   }, { passive: true });
 }
 
@@ -38,4 +50,23 @@ function highlightCurrentSection() {
     });
   }, { rootMargin: '-50% 0px -50% 0px' });
   $$('main section').forEach(section => observer.observe(section));
+}
+
+function initSmoothScroll() {
+  document.addEventListener('click', e => {
+    const anchor = e.target.closest('a[href^="#"]');
+    if (!anchor) return;
+    const href = anchor.getAttribute('href');
+    if (!href || href === '#' || anchor.classList.contains('project-link')) return;
+    const target = $(href);
+    if (!target) return;
+    e.preventDefault();
+    const topbarHeight = $('#topbar')?.offsetHeight || 60;
+    const targetTop = target.getBoundingClientRect().top + window.scrollY;
+    const dest = href === '#hero' ? 0 : Math.max(0, targetTop - (topbarHeight + 16));
+    window.scrollTo({
+      top: dest,
+      behavior: 'smooth'
+    });
+  });
 }

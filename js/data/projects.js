@@ -29,7 +29,7 @@ export const projects = [
       'Status: MVP; hardening pending (password hashing, OS keychain, individual admin accounts)',
     ],
     closedSource: true,
-    placeholders: 2,
+    // placeholders: 4,
   },
   {
     name: 'Face Search App',
@@ -47,7 +47,7 @@ export const projects = [
       'Release & infra: {cicd|CI/CD} with GitHub Actions, {velopack|Velopack} delta updates, Husky gates, {pbt|property-based tests}',
     ],
     closedSource: true,
-    placeholders: 4,
+    // placeholders: 4,
   },
   {
     name: 'Group Policy Manager',
@@ -76,7 +76,7 @@ export const projects = [
       'Docker Compose runs Weaviate and the embedding service',
     ],
     links: [{ label: 'GitHub', url: 'https://github.com/mohammdowais/image-search-engine' }],
-    placeholders: 2,
+    // placeholders: 2,
   },
   {
     name: 'Cipher Type Identifier',
@@ -101,6 +101,6 @@ export const projects = [
       'MVP presented at the Grand Finale to DRDO judges',
     ],
     links: [{ label: 'Live demo', url: 'https://readforspeed.netlify.app/' }],
-    placeholders: 2,
+    // placeholders: 2,
   },
 ];
